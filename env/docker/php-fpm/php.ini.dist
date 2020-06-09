@@ -1,0 +1,24 @@
+memory_limit=4096M
+date.timezone=UTC
+session.auto_start=Off
+short_open_tag=Off
+post_max_size=6M
+upload_max_filesize=64M
+max_execution_time=30
+default_socket_timeout=3600
+request_terminate_timeout=600
+
+# http://symfony.com/doc/current/performance.html
+apc.enable_cli=1
+opcache.enable_cli=1
+opcache.enable=1
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=20000
+opcache.memory_consumption=256
+opcache.use_cwd="0"
+opcache.max_file_size="0"
+opcache.revalidate_freq="0"
+realpath_cache_size=4096K
+realpath_cache_ttl=600
+# need clear the cache by restart the nginx, only for production
+opcache.validate_timestamps=1

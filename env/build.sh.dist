@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+#cat /dev/null > storage/logs/laravel.log
+#cat /dev/null > storage/logs/cron/cron.log
+#cat /dev/null > storage/logs/supervisor/laraworker.log
+#cat /dev/null > storage/logs/supervisor/supervisord.log
+#cat /dev/null > storage/logs/nginx/error.log
+#cat /dev/null > storage/logs/nginx/laravel_access.log
+#cat /dev/null > storage/logs/nginx/laravel_error.log
+
+docker-compose down
+docker-compose up -d --build
+
+docker exec -it my_workspace composer install
+docker exec -it my_workspace composer dump-autoload  --optimize
+docker exec -it my_workspace php artisan clear-compiled
+docker exec -it my_workspace php artisan cache:clear
+docker exec -it my_workspace php artisan config:clear
+docker exec -it my_workspace php artisan route:clear
+docker exec -it my_workspace php artisan view:clear
+docker exec -it my_workspace php artisan migrate -n --env=local
+#docker exec -it my_workspace php artisan migrate:fresh -n --env=local
+#docker exec -it my_workspace php artisan db:seed --env=local
+docker exec -it my_workspace php artisan key:generate
+docker exec -it my_workspace php artisan jwt:secret
+docker exec -it my_workspace php artisan ide-helper:generate
+docker exec -it my_workspace php artisan ide-helper:meta
+#docker exec -it my_workspace php artisan queue:work --queue=default
+
+
+docker exec -it my_php_fpm service cron start
+echo 'Waiting... 5sec' && sleep 5
+docker exec -it my_php_fpm service cron status
+
+docker exec -it my_php_fpm service supervisor start
+docker exec -it my_php_fpm supervisorctl reread
+docker exec -it my_php_fpm supervisorctl update
+docker exec -it my_php_fpm supervisorctl start laraworker:*
+echo 'Waiting... 5sec' && sleep 5
+docker exec -it my_php_fpm service supervisor status
+docker exec -it my_php_fpm supervisorctl status
+
+docker exec -it my_workspace php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+docker exec -it my_workspace php artisan l5-swagger:generate
+
+sudo chown -R $(whoami):www-data ./storage
+sudo chmod -R 775 ./storage
+sudo chmod -R 777 ./storage/volumes
