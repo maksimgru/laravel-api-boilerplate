@@ -14,7 +14,7 @@
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^17.0.0",
         "@fortawesome/fontawesome-free": "5.7.0",
-        "axios": "^0.18",
+        "axios": "^0.21",
         "bootstrap": "^4.2.1",
         "chart.js": "2.7.3",
         "cross-env": "^5.1",
